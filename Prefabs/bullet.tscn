@@ -1,0 +1,42 @@
+[gd_scene load_steps=5 format=3 uid="uid://ctcg6cj5cgkl4"]
+
+[sub_resource type="GDScript" id="GDScript_a8wwm"]
+script/source = "extends RigidBody3D
+
+@export var _power := 10
+@export var _speed := 400
+var direction: Vector3
+
+func _physics_process(delta):
+	if direction:
+		var collision = move_and_collide(direction * delta * _speed)
+		if collision is KinematicCollision3D:
+			queue_free()
+"
+
+[sub_resource type="ORMMaterial3D" id="ORMMaterial3D_qmafv"]
+albedo_color = Color(1, 1, 0, 1)
+emission_enabled = true
+emission = Color(0.898039, 0.713726, 0, 1)
+emission_energy_multiplier = 2.0
+
+[sub_resource type="CylinderMesh" id="CylinderMesh_mowfs"]
+material = SubResource("ORMMaterial3D_qmafv")
+top_radius = 0.02
+bottom_radius = 0.02
+height = 0.1
+
+[sub_resource type="CylinderShape3D" id="CylinderShape3D_aans5"]
+height = 0.1
+radius = 0.02
+
+[node name="Bullet" type="RigidBody3D"]
+script = SubResource("GDScript_a8wwm")
+
+[node name="MeshInstance3D" type="MeshInstance3D" parent="."]
+transform = Transform3D(1, 0, 0, 0, -4.37114e-08, -1, 0, 1, -4.37114e-08, 0, 0, 0)
+mesh = SubResource("CylinderMesh_mowfs")
+
+[node name="CollisionShape3D" type="CollisionShape3D" parent="."]
+transform = Transform3D(1, 0, 0, 0, -4.37114e-08, -1, 0, 1, -4.37114e-08, 0, 0, 0)
+shape = SubResource("CylinderShape3D_aans5")

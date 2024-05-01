@@ -1,0 +1,162 @@
+[gd_scene load_steps=12 format=3 uid="uid://58l8d5hgpbx1"]
+
+[ext_resource type="Script" path="res://Scripts/player.gd" id="1_kh6rk"]
+[ext_resource type="Script" path="res://Scripts/CameraPivot.gd" id="2_uyqjn"]
+[ext_resource type="PackedScene" uid="uid://qkbx0jyr5v07" path="res://Scenes/Guns/pistol.tscn" id="3_v7g1n"]
+[ext_resource type="Script" path="res://addons/godot-joystick-addon-main/joystick.gd" id="3_ywso4"]
+[ext_resource type="PackedScene" uid="uid://bl5ifx6ce20yo" path="res://Prefabs/touch_button.tscn" id="4_wdrew"]
+[ext_resource type="PackedScene" uid="uid://14u7yhbx27r2" path="res://Scenes/crosshair.tscn" id="5_5615c"]
+
+[sub_resource type="CapsuleShape3D" id="CapsuleShape3D_qfbue"]
+
+[sub_resource type="CapsuleMesh" id="CapsuleMesh_v43v0"]
+
+[sub_resource type="Animation" id="Animation_7448s"]
+length = 0.001
+tracks/0/type = "bezier"
+tracks/0/imported = false
+tracks/0/enabled = true
+tracks/0/path = NodePath("CameraPivot/Camera3D:position:x")
+tracks/0/interp = 1
+tracks/0/loop_wrap = true
+tracks/0/keys = {
+"handle_modes": PackedInt32Array(0),
+"points": PackedFloat32Array(0, -0.25, 0, 0.25, 0),
+"times": PackedFloat32Array(0)
+}
+tracks/1/type = "bezier"
+tracks/1/imported = false
+tracks/1/enabled = true
+tracks/1/path = NodePath("CameraPivot/Camera3D:position:y")
+tracks/1/interp = 1
+tracks/1/loop_wrap = true
+tracks/1/keys = {
+"handle_modes": PackedInt32Array(0),
+"points": PackedFloat32Array(0, -0.25, 0, 0.25, 0),
+"times": PackedFloat32Array(0)
+}
+tracks/2/type = "bezier"
+tracks/2/imported = false
+tracks/2/enabled = true
+tracks/2/path = NodePath("CameraPivot/Camera3D:position:z")
+tracks/2/interp = 1
+tracks/2/loop_wrap = true
+tracks/2/keys = {
+"handle_modes": PackedInt32Array(0),
+"points": PackedFloat32Array(0, -0.25, 0, 0.25, 0),
+"times": PackedFloat32Array(0)
+}
+
+[sub_resource type="Animation" id="Animation_a1c2v"]
+resource_name = "moving"
+length = 2.0
+tracks/0/type = "bezier"
+tracks/0/imported = false
+tracks/0/enabled = true
+tracks/0/path = NodePath("CameraPivot/Camera3D:position:x")
+tracks/0/interp = 1
+tracks/0/loop_wrap = true
+tracks/0/keys = {
+"handle_modes": PackedInt32Array(0, 0, 0, 0, 0),
+"points": PackedFloat32Array(-9.78133e-05, -0.25, 0, 0.25, 0, 0, -0.3, 0.0367281, 0.25, 0, -0.0582367, -0.25, 0, 0.25, 0, 0, -0.25, 0, 0.25, 0, -8.55647e-06, -0.3, 0.0377131, 0.25, 0),
+"times": PackedFloat32Array(0, 0.5, 1, 1.5, 2)
+}
+tracks/1/type = "bezier"
+tracks/1/imported = false
+tracks/1/enabled = true
+tracks/1/path = NodePath("CameraPivot/Camera3D:position:y")
+tracks/1/interp = 1
+tracks/1/loop_wrap = true
+tracks/1/keys = {
+"handle_modes": PackedInt32Array(0, 0, 0, 0, 0),
+"points": PackedFloat32Array(0, -0.25, 0, 0.2, 0.0410393, 0.200857, -0.25, 0, 0.25, 0, 0, -0.2, 0.0385718, 0.2, 0.0459743, 0.200857, -0.25, 0, 0.25, 0, 0, -0.2, 0.0484419, 0.25, 0),
+"times": PackedFloat32Array(0, 0.5, 1, 1.5, 2)
+}
+tracks/2/type = "bezier"
+tracks/2/imported = false
+tracks/2/enabled = true
+tracks/2/path = NodePath("CameraPivot/Camera3D:position:z")
+tracks/2/interp = 1
+tracks/2/loop_wrap = true
+tracks/2/keys = {
+"handle_modes": PackedInt32Array(0, 0, 0, 0, 0),
+"points": PackedFloat32Array(0, -0.25, 0, 0.25, 0, 0, -0.25, 0, 0.25, 0, 0, -0.25, 0, 0.25, 0, 0, -0.25, 0, 0.25, 0, 0, -0.25, 0, 0.25, 0),
+"times": PackedFloat32Array(0, 0.5, 1, 1.5, 2)
+}
+
+[sub_resource type="AnimationLibrary" id="AnimationLibrary_v8ny1"]
+_data = {
+"RESET": SubResource("Animation_7448s"),
+"moving": SubResource("Animation_a1c2v")
+}
+
+[node name="Player" type="CharacterBody3D" node_paths=PackedStringArray("joystick", "camera_drag", "jump_btn", "crosshair", "fire_btn")]
+script = ExtResource("1_kh6rk")
+joystick = NodePath("UI/Joystick")
+camera_drag = NodePath("UI/CameraDrag")
+jump_btn = NodePath("UI/Jump")
+crosshair = NodePath("UI/Crosshair")
+fire_btn = NodePath("UI/Fire")
+
+[node name="CollisionShape3D" type="CollisionShape3D" parent="."]
+shape = SubResource("CapsuleShape3D_qfbue")
+
+[node name="MeshInstance3D" type="MeshInstance3D" parent="."]
+mesh = SubResource("CapsuleMesh_v43v0")
+
+[node name="CameraPivot" type="Node3D" parent="." groups=["camera_pivot"]]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.550974, -0.124078)
+script = ExtResource("2_uyqjn")
+
+[node name="Camera3D" type="Camera3D" parent="CameraPivot"]
+
+[node name="GunPivot" type="Marker3D" parent="CameraPivot"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0.482052, -0.509581, -0.92213)
+
+[node name="Pistol" parent="CameraPivot/GunPivot" instance=ExtResource("3_v7g1n")]
+
+[node name="UI" type="CanvasLayer" parent="."]
+
+[node name="CameraDrag" type="Control" parent="UI"]
+layout_mode = 3
+anchors_preset = 0
+offset_left = 486.0
+offset_top = 71.0
+offset_right = 1054.0
+offset_bottom = 557.0
+
+[node name="Joystick" type="Node2D" parent="UI"]
+position = Vector2(162, 411)
+script = ExtResource("3_ywso4")
+_big_circle_color = Color(0, 0, 0, 0.901961)
+
+[node name="Jump" parent="UI" instance=ExtResource("4_wdrew")]
+modulate = Color(1, 1, 1, 0.594)
+offset_left = 1023.0
+offset_top = 327.0
+offset_right = 1113.0
+offset_bottom = 417.0
+button_name = "Jump"
+_transparency = 0.594
+
+[node name="Crosshair" parent="UI" instance=ExtResource("5_5615c")]
+position = Vector2(576, 324)
+
+[node name="Fire" parent="UI" instance=ExtResource("4_wdrew")]
+modulate = Color(1, 1, 1, 0.605)
+offset_left = 938.0
+offset_top = 438.0
+offset_right = 1028.0
+offset_bottom = 528.0
+button_name = "Fire"
+_transparency = 0.605
+
+[node name="AnimationPlayer" type="AnimationPlayer" parent="."]
+libraries = {
+"": SubResource("AnimationLibrary_v8ny1")
+}
+
+[connection signal="gui_input" from="UI/CameraDrag" to="." method="_on_camera_drag_gui_input"]
+[connection signal="gui_input" from="UI/CameraDrag" to="CameraPivot" method="_on_camera_drag_gui_input"]
+[connection signal="pressed" from="UI/Jump" to="." method="_on_jump_pressed"]
+[connection signal="pressed" from="UI/Fire" to="." method="_on_fire_pressed"]
