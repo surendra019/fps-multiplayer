@@ -1,8 +1,9 @@
-[gd_scene load_steps=15 format=3 uid="uid://qkbx0jyr5v07"]
+[gd_scene load_steps=17 format=3 uid="uid://qkbx0jyr5v07"]
 
 [ext_resource type="Texture2D" uid="uid://cyhvyp6h13lj1" path="res://Assets/Models/pistol_0.png" id="1_0fb0g"]
 [ext_resource type="Script" path="res://Scripts/Guns/pistol.gd" id="1_coo2b"]
 [ext_resource type="Texture2D" uid="uid://dqmscunjn4fc7" path="res://Assets/Models/pistol_1.png" id="2_0ln3y"]
+[ext_resource type="Texture2D" uid="uid://bpgc2gbsmnir" path="res://Assets/Icons/Guns/pistol.png" id="2_kae33"]
 [ext_resource type="Texture2D" uid="uid://sg2ti5w73r6t" path="res://Assets/Models/pistol_2.png" id="3_0inu7"]
 [ext_resource type="Texture2D" uid="uid://bood7jcaaex0e" path="res://Assets/Effects/muzzle_flash_fire.png" id="4_vwwdt"]
 
@@ -109,8 +110,14 @@ particles_anim_loop = false
 material = SubResource("StandardMaterial3D_i7c73")
 size = Vector2(0.5, 0.5)
 
+[sub_resource type="SphereShape3D" id="SphereShape3D_55clb"]
+radius = 1.02089
+
 [node name="Pistol" type="Node3D"]
 script = ExtResource("1_coo2b")
+icon = ExtResource("2_kae33")
+head = "Pistol"
+description = "8.8mm"
 
 [node name="Sketchfab_Scene" type="Node3D" parent="."]
 transform = Transform3D(0.3, 0, 0, 0, 0.3, 0, 0, 0, 0.3, 0, 0, 0)
@@ -147,3 +154,11 @@ draw_pass_1 = SubResource("QuadMesh_chb6j")
 
 [node name="ShotMarker" type="Marker3D" parent="."]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -5.96046e-08, 0.193079, -0.430307)
+
+[node name="PlayerDetector" type="Area3D" parent="."]
+
+[node name="CollisionShape3D" type="CollisionShape3D" parent="PlayerDetector"]
+shape = SubResource("SphereShape3D_55clb")
+
+[connection signal="body_entered" from="PlayerDetector" to="." method="_on_player_detector_body_entered"]
+[connection signal="body_exited" from="PlayerDetector" to="." method="_on_player_detector_body_exited"]

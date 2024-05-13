@@ -1,4 +1,4 @@
-[gd_scene load_steps=12 format=3 uid="uid://58l8d5hgpbx1"]
+[gd_scene load_steps=14 format=3 uid="uid://58l8d5hgpbx1"]
 
 [ext_resource type="Script" path="res://Scripts/player.gd" id="1_kh6rk"]
 [ext_resource type="Script" path="res://Scripts/CameraPivot.gd" id="2_uyqjn"]
@@ -6,6 +6,7 @@
 [ext_resource type="Script" path="res://addons/godot-joystick-addon-main/joystick.gd" id="3_ywso4"]
 [ext_resource type="PackedScene" uid="uid://bl5ifx6ce20yo" path="res://Prefabs/touch_button.tscn" id="4_wdrew"]
 [ext_resource type="PackedScene" uid="uid://14u7yhbx27r2" path="res://Scenes/crosshair.tscn" id="5_5615c"]
+[ext_resource type="PackedScene" uid="uid://cg7oq21ipfe34" path="res://Prefabs/pickable_list.tscn" id="7_olca5"]
 
 [sub_resource type="CapsuleShape3D" id="CapsuleShape3D_qfbue"]
 
@@ -45,6 +46,43 @@ tracks/2/keys = {
 "handle_modes": PackedInt32Array(0),
 "points": PackedFloat32Array(0, -0.25, 0, 0.25, 0),
 "times": PackedFloat32Array(0)
+}
+
+[sub_resource type="Animation" id="Animation_qnntu"]
+resource_name = "ads_moving"
+length = 2.0
+tracks/0/type = "bezier"
+tracks/0/imported = false
+tracks/0/enabled = true
+tracks/0/path = NodePath("CameraPivot/AdsCamera:position:x")
+tracks/0/interp = 1
+tracks/0/loop_wrap = true
+tracks/0/keys = {
+"handle_modes": PackedInt32Array(0, 0, 0, 0, 0),
+"points": PackedFloat32Array(-9.78133e-05, -0.25, 0, 0.25, 0, 0, -0.3, 0.0367281, 0.25, 0, -0.0409405, -0.25, 0, 0.25, 0, 0, -0.25, 0, 0.25, 0, -8.55647e-06, -0.3, 0.0377131, 0.25, 0),
+"times": PackedFloat32Array(0, 0.5, 1, 1.5, 2)
+}
+tracks/1/type = "bezier"
+tracks/1/imported = false
+tracks/1/enabled = true
+tracks/1/path = NodePath("CameraPivot/AdsCamera:position:y")
+tracks/1/interp = 1
+tracks/1/loop_wrap = true
+tracks/1/keys = {
+"handle_modes": PackedInt32Array(0, 0, 0, 0, 0),
+"points": PackedFloat32Array(0, -0.25, 0, 0.2, 0.0410393, 0.0618036, -0.25, 0, 0.25, 0, 0, -0.2, 0.0385718, 0.2, 0.0459743, 0.0618036, -0.25, 0, 0.25, 0, 0, -0.2, 0.0484419, 0.25, 0),
+"times": PackedFloat32Array(0, 0.5, 1, 1.5, 2)
+}
+tracks/2/type = "bezier"
+tracks/2/imported = false
+tracks/2/enabled = true
+tracks/2/path = NodePath("CameraPivot/AdsCamera:position:z")
+tracks/2/interp = 1
+tracks/2/loop_wrap = true
+tracks/2/keys = {
+"handle_modes": PackedInt32Array(0, 0, 0, 0, 0),
+"points": PackedFloat32Array(0, -0.25, 0, 0.25, 0, 0, -0.25, 0, 0.25, 0, 0, -0.25, 0, 0.25, 0, 0, -0.25, 0, 0.25, 0, 0, -0.25, 0, 0.25, 0),
+"times": PackedFloat32Array(0, 0.5, 1, 1.5, 2)
 }
 
 [sub_resource type="Animation" id="Animation_a1c2v"]
@@ -87,10 +125,11 @@ tracks/2/keys = {
 [sub_resource type="AnimationLibrary" id="AnimationLibrary_v8ny1"]
 _data = {
 "RESET": SubResource("Animation_7448s"),
+"ads_moving": SubResource("Animation_qnntu"),
 "moving": SubResource("Animation_a1c2v")
 }
 
-[node name="Player" type="CharacterBody3D" node_paths=PackedStringArray("joystick", "camera_drag", "jump_btn", "crosshair", "fire_btn", "ads_btn")]
+[node name="Player" type="CharacterBody3D" node_paths=PackedStringArray("joystick", "camera_drag", "jump_btn", "crosshair", "fire_btn", "ads_btn") groups=["player"]]
 script = ExtResource("1_kh6rk")
 joystick = NodePath("UI/Joystick")
 camera_drag = NodePath("UI/CameraDrag")
@@ -112,10 +151,9 @@ script = ExtResource("2_uyqjn")
 [node name="Camera3D" type="Camera3D" parent="CameraPivot"]
 
 [node name="AdsCamera" type="Camera3D" parent="CameraPivot"]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -9.78133e-05, 0, 0)
 
 [node name="AdsPivot" type="Marker3D" parent="CameraPivot"]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0.484674, -0.164305, -0.374236)
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0.481, -0.254, -0.374)
 
 [node name="GunPivot" type="Marker3D" parent="CameraPivot"]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0.482052, -0.509581, -0.92213)
@@ -167,10 +205,20 @@ offset_bottom = 404.0
 button_name = "ADS"
 _transparency = 0.605
 
+[node name="PickableList" parent="UI" instance=ExtResource("7_olca5")]
+offset_left = 622.0
+offset_top = 207.0
+offset_right = -323.0
+offset_bottom = -212.0
+metadata/_edit_group_ = true
+
 [node name="AnimationPlayer" type="AnimationPlayer" parent="."]
 libraries = {
 "": SubResource("AnimationLibrary_v8ny1")
 }
+
+[node name="Foot" type="Marker3D" parent="."]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, -0.969629, 0)
 
 [connection signal="gui_input" from="UI/CameraDrag" to="." method="_on_camera_drag_gui_input"]
 [connection signal="gui_input" from="UI/CameraDrag" to="CameraPivot" method="_on_camera_drag_gui_input"]

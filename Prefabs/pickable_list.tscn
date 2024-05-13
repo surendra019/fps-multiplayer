@@ -1,0 +1,102 @@
+[gd_scene load_steps=5 format=3 uid="uid://cg7oq21ipfe34"]
+
+[ext_resource type="Texture2D" uid="uid://cpv36x0v8xouq" path="res://Assets/Icons/pick_icon.png" id="2_ia56s"]
+[ext_resource type="Texture2D" uid="uid://c1hho5pcnfgm3" path="res://Assets/Icons/cross.png" id="3_13jx4"]
+
+[sub_resource type="GDScript" id="GDScript_e134w"]
+script/source = "extends Control
+
+
+@onready var toggle_list_btn = $Panel/TextureButton
+@onready var scroll_container = $ScrollContainer
+@onready var pickable_container = $ScrollContainer/VBoxContainer
+
+
+const PICKABLE = preload(\"res://Prefabs/pickable.tscn\")
+
+func _ready():
+	scroll_container.visible = false
+
+func _physics_process(delta):
+	self.visible = pickable_container.get_child_count() > 0
+	
+func add_pickable(texture: Texture2D, head: String, description: String):
+	var pickable = PICKABLE.instantiate()
+	pickable_container.add_child(pickable)
+	pickable.set_texture(texture)
+	pickable.set_head(head)
+	pickable.set_description(description)
+
+func remove_pickable(texture: String):
+	for i in pickable_container.get_children():
+		if i.texture_rect.texture.resource_path == texture:
+			pickable_container.remove_child(i)
+
+
+func _on_texture_button_toggled(toggled_on):
+	scroll_container.visible = toggled_on
+"
+
+[sub_resource type="StyleBoxFlat" id="StyleBoxFlat_5cnmv"]
+corner_radius_top_left = 32
+corner_radius_top_right = 32
+corner_radius_bottom_right = 32
+corner_radius_bottom_left = 32
+
+[node name="PickableList" type="Control"]
+layout_mode = 3
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+offset_right = -948.0
+offset_bottom = -429.0
+grow_horizontal = 2
+grow_vertical = 2
+script = SubResource("GDScript_e134w")
+
+[node name="ScrollContainer" type="ScrollContainer" parent="."]
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+offset_right = -9.0
+offset_bottom = -27.0
+grow_horizontal = 2
+grow_vertical = 2
+horizontal_scroll_mode = 0
+vertical_scroll_mode = 3
+
+[node name="VBoxContainer" type="VBoxContainer" parent="ScrollContainer"]
+layout_mode = 2
+theme_override_constants/separation = 0
+
+[node name="Panel" type="Panel" parent="."]
+layout_mode = 0
+offset_left = 145.0
+offset_top = -63.0
+offset_right = 197.0
+offset_bottom = -11.0
+theme_override_styles/panel = SubResource("StyleBoxFlat_5cnmv")
+metadata/_edit_group_ = true
+
+[node name="TextureButton" type="TextureButton" parent="Panel"]
+custom_minimum_size = Vector2(40, 40)
+layout_mode = 1
+anchors_preset = 8
+anchor_left = 0.5
+anchor_top = 0.5
+anchor_right = 0.5
+anchor_bottom = 0.5
+offset_left = -20.0
+offset_top = -20.0
+offset_right = 20.0
+offset_bottom = 20.0
+grow_horizontal = 2
+grow_vertical = 2
+toggle_mode = true
+texture_normal = ExtResource("2_ia56s")
+texture_pressed = ExtResource("3_13jx4")
+ignore_texture_size = true
+stretch_mode = 4
+
+[connection signal="toggled" from="Panel/TextureButton" to="." method="_on_texture_button_toggled"]

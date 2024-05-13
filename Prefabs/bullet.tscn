@@ -7,11 +7,22 @@ script/source = "extends RigidBody3D
 @export var _speed := 400
 var direction: Vector3
 
+const BULLET_HOLE = preload(\"res://Prefabs/bullet_hole.tscn\")
+
 func _physics_process(delta):
 	if direction:
 		var collision = move_and_collide(direction * delta * _speed)
 		if collision is KinematicCollision3D:
+			add_bullet_hole(collision.get_position(), collision.get_normal())
 			queue_free()
+
+
+func add_bullet_hole(collision_position: Vector3, normal: Vector3):
+	var h = BULLET_HOLE.instantiate()
+	h.global_position = collision_position
+
+	h.look_at_from_position(collision_position, normal * 100)
+	get_tree().get_first_node_in_group(\"temp_objects\").add_child(h)
 "
 
 [sub_resource type="ORMMaterial3D" id="ORMMaterial3D_qmafv"]

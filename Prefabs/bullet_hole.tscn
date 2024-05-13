@@ -1,0 +1,27 @@
+[gd_scene load_steps=3 format=3 uid="uid://bacnh6gvumrem"]
+
+[ext_resource type="Texture2D" uid="uid://btu5fto0u4g26" path="res://Assets/Effects/hole.png" id="1_t02un"]
+
+[sub_resource type="GDScript" id="GDScript_hwuin"]
+script/source = "extends Node3D
+
+
+
+func _on_timer_timeout():
+	self.queue_free()
+"
+
+[node name="BulletHole" type="Node3D"]
+transform = Transform3D(-4.37114e-08, -1, 0, 1, -4.37114e-08, 0, 0, 0, 1, 0, 0, 0)
+script = SubResource("GDScript_hwuin")
+
+[node name="Decal" type="Decal" parent="."]
+transform = Transform3D(1, 0, 0, 0, -4.37114e-08, -1, 0, 1, -4.37114e-08, 0, 0, 0)
+size = Vector3(0.3, 0.3, 0.3)
+texture_albedo = ExtResource("1_t02un")
+
+[node name="Timer" type="Timer" parent="."]
+wait_time = 5.0
+autostart = true
+
+[connection signal="timeout" from="Timer" to="." method="_on_timer_timeout"]

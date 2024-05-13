@@ -1,0 +1,121 @@
+[gd_scene load_steps=8 format=3 uid="uid://c11u1tydjhm1"]
+
+[ext_resource type="Texture2D" uid="uid://bpgc2gbsmnir" path="res://Assets/Icons/Guns/pistol.png" id="1_2s1px"]
+[ext_resource type="FontFile" uid="uid://bnsacluo73fud" path="res://Fonts/Rubik-Medium.ttf" id="2_6mhgu"]
+[ext_resource type="FontFile" uid="uid://idbphhhvrkpa" path="res://Fonts/Rubik-Light.ttf" id="3_wa3rc"]
+
+[sub_resource type="GDScript" id="GDScript_w0h78"]
+script/source = "extends Control
+
+@onready var head = $HBoxContainer/ColorRect/VBoxContainer/Head
+@onready var description = $HBoxContainer/ColorRect/VBoxContainer/Description
+@onready var texture_rect = $HBoxContainer/MarginContainer/TextureRect
+
+func set_head(a: String):
+	head.text = a
+	
+func set_description(a: String):
+	description.text = a
+
+func set_texture(tex: Texture2D):
+	texture_rect.texture = tex
+"
+
+[sub_resource type="StyleBoxFlat" id="StyleBoxFlat_y5vuw"]
+border_width_left = 2
+border_width_top = 1
+border_width_right = 2
+border_width_bottom = 1
+border_color = Color(0, 0, 0, 1)
+
+[sub_resource type="LabelSettings" id="LabelSettings_deuqy"]
+font = ExtResource("2_6mhgu")
+font_size = 14
+outline_size = 3
+outline_color = Color(0, 0, 0, 1)
+
+[sub_resource type="LabelSettings" id="LabelSettings_b4h2l"]
+font = ExtResource("3_wa3rc")
+font_size = 10
+outline_size = 3
+outline_color = Color(0, 0, 0, 1)
+
+[node name="Pickable" type="Control"]
+custom_minimum_size = Vector2(195, 64)
+layout_mode = 3
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+offset_right = -957.0
+offset_bottom = -584.0
+grow_horizontal = 2
+grow_vertical = 2
+script = SubResource("GDScript_w0h78")
+
+[node name="Panel" type="Panel" parent="."]
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+theme_override_styles/panel = SubResource("StyleBoxFlat_y5vuw")
+
+[node name="HBoxContainer" type="HBoxContainer" parent="."]
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+offset_left = 1.0
+offset_top = 1.0
+offset_right = -2.0
+offset_bottom = -1.0
+grow_horizontal = 2
+grow_vertical = 2
+
+[node name="MarginContainer" type="MarginContainer" parent="HBoxContainer"]
+layout_mode = 2
+size_flags_horizontal = 3
+theme_override_constants/margin_left = 5
+theme_override_constants/margin_top = 5
+theme_override_constants/margin_right = 5
+theme_override_constants/margin_bottom = 5
+
+[node name="TextureRect" type="TextureRect" parent="HBoxContainer/MarginContainer"]
+layout_mode = 2
+texture = ExtResource("1_2s1px")
+expand_mode = 1
+stretch_mode = 4
+
+[node name="ColorRect" type="ColorRect" parent="HBoxContainer"]
+layout_mode = 2
+size_flags_horizontal = 3
+size_flags_stretch_ratio = 2.0
+
+[node name="VBoxContainer" type="VBoxContainer" parent="HBoxContainer/ColorRect"]
+layout_mode = 1
+anchors_preset = 8
+anchor_left = 0.5
+anchor_top = 0.5
+anchor_right = 0.5
+anchor_bottom = 0.5
+offset_left = -52.0
+offset_top = -19.0
+offset_right = 52.0
+offset_bottom = 19.0
+grow_horizontal = 2
+grow_vertical = 2
+size_flags_horizontal = 3
+size_flags_stretch_ratio = 2.0
+
+[node name="Head" type="Label" parent="HBoxContainer/ColorRect/VBoxContainer"]
+layout_mode = 2
+size_flags_vertical = 6
+text = "Pistol"
+label_settings = SubResource("LabelSettings_deuqy")
+
+[node name="Description" type="Label" parent="HBoxContainer/ColorRect/VBoxContainer"]
+layout_mode = 2
+size_flags_vertical = 6
+text = "8.8mm"
+label_settings = SubResource("LabelSettings_b4h2l")
