@@ -31,6 +31,7 @@ func remove_pickable(texture: String):
 	for i in pickable_container.get_children():
 		if i.texture_rect.texture.resource_path == texture:
 			pickable_container.remove_child(i)
+			break
 
 
 func _on_texture_button_toggled(toggled_on):

@@ -12,6 +12,7 @@ const JUMP_VELOCITY = 4.5
 @export var crosshair: Node
 @export var fire_btn: Node
 @export var ads_btn: Node
+@onready var weapons = $UI/Weapons
 
 @onready var pistol = $CameraPivot/GunPivot/Pistol
 @onready var animation_player = $AnimationPlayer
@@ -22,10 +23,13 @@ const JUMP_VELOCITY = 4.5
 @onready var gun_pivot = $CameraPivot/GunPivot
 @onready var foot = $Foot
 @onready var pickable_list = $UI/PickableList
+@onready var secondary_gun_pivot = $CameraPivot/SecondaryGunPivot
 
 
 var CAMERA_INIT_POSITION: Vector3
 var enable_ads: bool
+
+var near_objects = {}
 
 # Get the gravity from the project settings to be synced with RigidBody nodes.
 var gravity = ProjectSettings.get_setting("physics/3d/default_gravity")
@@ -33,14 +37,22 @@ var gravity = ProjectSettings.get_setting("physics/3d/default_gravity")
 func _ready():
 	set_platform_configurations()
 	CAMERA_INIT_POSITION = camera_3d.position
+	Manager.object_picked.connect(func(obj_id):
+		pick_object(obj_id)
+		)
+	weapons.slot_selected.connect(func(gun):
+		select_gun(gun)
+		)
 	if has_gun():
 		get_current_gun().dropped = false
+		weapons.add_gun(get_current_gun().head, get_current_gun())
 	
 func _physics_process(delta):
 	handle_inputs(delta)
 
 	
-
+func get_obj_by_id(obj_id):
+	return near_objects[obj_id]
 
 func handle_inputs(delta):
 	if not is_on_floor():
@@ -50,7 +62,8 @@ func handle_inputs(delta):
 		velocity.y = JUMP_VELOCITY
 	
 	if Input.is_action_just_pressed("ads"):
-		toggle_ads()
+		if !Manager.CURSOR_MODE_ENABLED:
+			toggle_ads()
 	
 	if Input.is_action_just_pressed("drop_gun"):
 		drop_gun()
@@ -75,9 +88,10 @@ func handle_inputs(delta):
 	else:
 		input_dir = Input.get_vector("left", "right", "up", "down")
 		if Input.is_action_just_pressed("fire"):
-			if has_gun():
-				get_current_gun().fire_bullet()
-		
+			if !Manager.CURSOR_MODE_ENABLED:
+				if has_gun():
+					get_current_gun().fire_bullet()
+			
 	var direction = (transform.basis * Vector3(input_dir.x, 0, input_dir.y)).normalized()
 	
 	if direction:
@@ -117,13 +131,15 @@ func set_platform_configurations():
 		jump_btn.hide()
 		fire_btn.hide()
 		ads_btn.hide()
-		#Input.mouse_mode = Input.MOUSE_MODE_CAPTURED
+		Input.mouse_mode = Input.MOUSE_MODE_CAPTURED
+		Manager.CURSOR_MODE_ENABLED = false
 
 
 func _input(event):
 	if OS.get_name() == "Windows":
-		if event is InputEventMouseMotion:
-			self.rotation.y -= event.relative.x/1000*Manager.CAMERA_SENSITIVITY
+		if !Manager.CURSOR_MODE_ENABLED:
+			if event is InputEventMouseMotion:
+				self.rotation.y -= event.relative.x/1000*Manager.CAMERA_SENSITIVITY
 
 
 func _on_jump_pressed():
@@ -145,18 +161,87 @@ func _on_ads_pressed():
 	toggle_ads()
 
 func drop_gun():
-	if has_gun:
-		var current_gun = gun_pivot.get_child(0)
+	if has_gun():
+		var current_gun = get_current_gun()
 		var gun : Node3D = current_gun.duplicate()
 		var temp_objects = get_tree().get_first_node_in_group("temp_objects")
 		gun.global_position = foot.global_position
 		temp_objects.add_child(gun)
 		gun.rotation_degrees.z = 90
 		current_gun.queue_free()
+		weapons.remove_gun()
 		gun.dropped = true
 	if enable_ads:
 		enable_ads = false
 	
+
+func pick_object(obj_id):
+	var obj = get_obj_by_id(obj_id)
+	var new = obj.duplicate()
+	
+	if weapons.has_two_guns():
+		drop_gun()
+	else:
+		if has_gun():
+			add_secondary_weapon(obj_id)
+			return
+			
+	gun_pivot.add_child(new)
+	obj.queue_free()
+	new.dropped = false
+	new.rotation_degrees = Vector3.ZERO
+	var t = get_tree().create_tween()
+	t.tween_property(new, "position", Vector3.ZERO, .2).set_ease(Tween.EASE_OUT)
+	t.play()
+	weapons.add_gun(new.head, new)
+
+func add_secondary_weapon(obj_id):
+	var obj = get_obj_by_id(obj_id)
+	var new = obj.duplicate()
+	secondary_gun_pivot.add_child(new)
+	new.position = Vector3.ZERO
+	obj.queue_free()
+	new.dropped = false
+	new.rotation_degrees.x = 90
+	new.rotation_degrees.y = -90
+	new.rotation_degrees.z = 0
+	weapons.add_gun(new.head, new)
+	select_gun(new)
+	
+func select_gun(gun):
+	
+	var dup = gun.duplicate()
+	if !has_gun():
+		gun_pivot.add_child(dup)
+		gun.queue_free()
+		dup.dropped = false
+		dup.position = Vector3.ZERO
+		dup.rotation_degrees = Vector3.ZERO
+	else:
+		if gun != get_current_gun():
+			var pri = get_current_gun()
+			var sec = get_secondary_gun()
+			
+			var pri_dup = pri.duplicate()
+			var sec_dup = sec.duplicate()
+			sec_dup.dropped = false
+			pri_dup.dropped = false
+			weapons.get_current_selected_weapon().get_parent().gun = sec_dup
+			weapons.get_secondary_slot().get_parent().gun = pri_dup
+			pri.queue_free()
+			sec.queue_free()
+			
+			secondary_gun_pivot.add_child(pri_dup)
+			gun_pivot.add_child(sec_dup)
+			
+			var temp_rot = pri_dup.rotation_degrees
+			var temp_pos = pri_dup.position
+			pri_dup.position = sec_dup.position
+			pri_dup.rotation_degrees = sec_dup.rotation_degrees
+			sec_dup.position = temp_pos
+			sec_dup.rotation_degrees = temp_rot
+	
+		
 	
 func has_gun():
 	return gun_pivot.get_child_count() > 0
@@ -164,9 +249,13 @@ func has_gun():
 func get_current_gun():
 	return gun_pivot.get_child(0)
 
-
-func show_pickable(texture: Texture2D, head: String, description: String):
+func get_secondary_gun():
+	return secondary_gun_pivot.get_child(0)
+	
+func show_pickable(texture: Texture2D, head: String, description: String, object):
+	near_objects[texture.resource_path] = object
 	pickable_list.add_pickable(texture, head, description)
 
-func hide_pickable(texture: String):
+func hide_pickable(texture: String, object):
+	near_objects.erase(texture)
 	pickable_list.remove_pickable(texture)

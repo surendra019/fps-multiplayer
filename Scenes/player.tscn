@@ -1,4 +1,4 @@
-[gd_scene load_steps=14 format=3 uid="uid://58l8d5hgpbx1"]
+[gd_scene load_steps=18 format=3 uid="uid://58l8d5hgpbx1"]
 
 [ext_resource type="Script" path="res://Scripts/player.gd" id="1_kh6rk"]
 [ext_resource type="Script" path="res://Scripts/CameraPivot.gd" id="2_uyqjn"]
@@ -11,6 +11,116 @@
 [sub_resource type="CapsuleShape3D" id="CapsuleShape3D_qfbue"]
 
 [sub_resource type="CapsuleMesh" id="CapsuleMesh_v43v0"]
+
+[sub_resource type="GDScript" id="GDScript_xwce6"]
+script/source = "extends HBoxContainer
+
+
+signal slot_selected(gun)
+
+@onready var left = $Left
+@onready var right = $Right
+@onready var left_label = $Left/Label
+@onready var right_label = $Right/Label
+
+
+func add_gun(gun_name: String, gun):
+	if !has_two_guns():
+		if left_label.text != \"\":
+			right_label.text = gun_name
+			right.gun = gun
+			right.select()
+			return
+		else:
+			left_label.text = gun_name
+			left.gun = gun
+			left.select()
+			return
+			
+		if right_label.text != \"\":
+			left_label.text = gun_name
+			left.gun = gun
+			left.select()
+			return
+		else:
+			right_label.text = gun_name
+			right.gun = gun
+			right.select()
+			return
+	else:
+		get_current_selected_weapon().text = gun_name
+		get_current_selected_weapon().get_parent().gun = gun
+
+func remove_gun():
+	get_current_selected_weapon().text = \"\"
+	get_current_selected_weapon().get_parent().gun = null
+	get_current_selected_weapon().get_parent().unselect()
+	
+	
+func has_two_guns():
+	return left_label.text != \"\" && right_label.text != \"\"
+
+
+func get_current_selected_weapon():
+	return left_label if left.state == left.STATE.SELECTED else right_label
+
+func get_secondary_slot():
+	return left_label if get_current_selected_weapon() == right_label else right_label
+	
+func unselect(ref):
+	if ref == left:
+		right.unselect()
+	else:
+		left.unselect()
+
+"
+
+[sub_resource type="StyleBoxFlat" id="StyleBoxFlat_yvihf"]
+bg_color = Color(0.137255, 0.137255, 0.137255, 1)
+
+[sub_resource type="GDScript" id="GDScript_o1rge"]
+script/source = "@tool
+extends Panel
+
+@export_range(0.0, 1.0) var _transparency: float = 1.0
+
+enum STATE {SELECTED, UNSELECTED}
+var state = STATE.UNSELECTED
+var gun = null
+
+
+func _gui_input(event):
+	if event is InputEventScreenTouch:
+		if event.pressed:
+			if get_child(0).text != \"\":
+				select()
+				get_parent().slot_selected.emit(gun)
+			
+func _process(delta):
+	self.modulate.a = _transparency
+
+
+func select():
+	var style : StyleBoxFlat = get(\"theme_override_styles/panel\")
+	style.border_width_bottom = 1
+	style.border_width_top = 1
+	style.border_width_left = 1
+	style.border_width_right = 1
+	state = STATE.SELECTED
+	get_parent().unselect(self)
+	
+
+func unselect():
+	var style : StyleBoxFlat = get(\"theme_override_styles/panel\")
+	style.border_width_bottom = 0
+	style.border_width_top = 0
+	style.border_width_left = 0
+	style.border_width_right = 0
+	state = STATE.UNSELECTED
+"
+
+[sub_resource type="StyleBoxFlat" id="StyleBoxFlat_y1pw5"]
+bg_color = Color(0.137255, 0.137255, 0.137255, 1)
 
 [sub_resource type="Animation" id="Animation_7448s"]
 length = 0.001
@@ -160,6 +270,9 @@ transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0.482052, -0.509581, -0.92213
 
 [node name="Pistol" parent="CameraPivot/GunPivot" instance=ExtResource("3_v7g1n")]
 
+[node name="SecondaryGunPivot" type="Marker3D" parent="CameraPivot"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0.126367, -0.230582, 0.619334)
+
 [node name="UI" type="CanvasLayer" parent="."]
 
 [node name="CameraDrag" type="Control" parent="UI"]
@@ -211,6 +324,56 @@ offset_top = 207.0
 offset_right = -323.0
 offset_bottom = -212.0
 metadata/_edit_group_ = true
+
+[node name="Weapons" type="HBoxContainer" parent="UI"]
+anchors_preset = 7
+anchor_left = 0.5
+anchor_top = 1.0
+anchor_right = 0.5
+anchor_bottom = 1.0
+offset_left = -120.5
+offset_top = -70.0
+offset_right = 120.5
+offset_bottom = -16.0
+grow_horizontal = 2
+grow_vertical = 0
+script = SubResource("GDScript_xwce6")
+
+[node name="Left" type="Panel" parent="UI/Weapons"]
+modulate = Color(1, 1, 1, 0.7)
+layout_mode = 2
+size_flags_horizontal = 3
+theme_override_styles/panel = SubResource("StyleBoxFlat_yvihf")
+script = SubResource("GDScript_o1rge")
+_transparency = 0.7
+
+[node name="Label" type="Label" parent="UI/Weapons/Left"]
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+horizontal_alignment = 1
+vertical_alignment = 1
+
+[node name="Right" type="Panel" parent="UI/Weapons"]
+modulate = Color(1, 1, 1, 0.7)
+layout_mode = 2
+size_flags_horizontal = 3
+theme_override_styles/panel = SubResource("StyleBoxFlat_y1pw5")
+script = SubResource("GDScript_o1rge")
+_transparency = 0.7
+
+[node name="Label" type="Label" parent="UI/Weapons/Right"]
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+horizontal_alignment = 1
+vertical_alignment = 1
 
 [node name="AnimationPlayer" type="AnimationPlayer" parent="."]
 libraries = {

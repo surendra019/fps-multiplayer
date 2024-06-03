@@ -43,9 +43,9 @@ func fire_bullet():
 
 func _on_player_detector_body_entered(body):
 	if body.is_in_group("player") && dropped:
-		body.show_pickable(icon, head, description)
+		body.show_pickable(icon, head, description, self)
 
 
 func _on_player_detector_body_exited(body):
 	if body.is_in_group("player") && dropped:
-		body.hide_pickable(icon.resource_path)
+		body.hide_pickable(icon.resource_path, self)

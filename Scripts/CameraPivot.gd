@@ -16,8 +16,9 @@ func _on_camera_drag_gui_input(event):
 	
 func _input(event):
 	if OS.get_name() == "Windows":
-		if event is InputEventMouseMotion:
-			self.rotation.x = clamp(self.rotation.x-(event.relative.y)/1000*Manager.CAMERA_SENSITIVITY, -.9, .83)
+		if !Manager.CURSOR_MODE_ENABLED:
+			if event is InputEventMouseMotion:
+				self.rotation.x = clamp(self.rotation.x-(event.relative.y)/1000*Manager.CAMERA_SENSITIVITY, -.9, .83)
 
 
 func get_target_position():

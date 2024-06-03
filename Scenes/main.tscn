@@ -1,4 +1,4 @@
-[gd_scene load_steps=27 format=3 uid="uid://bkkyhqu3bk6gq"]
+[gd_scene load_steps=28 format=3 uid="uid://bkkyhqu3bk6gq"]
 
 [ext_resource type="Texture2D" uid="uid://b4m63mru8y82m" path="res://Assets/Textures/Earth/RammedEarth006_COL_2K_METALNESS.png" id="1_ywhrd"]
 [ext_resource type="Texture2D" uid="uid://bti0mro8rr6t3" path="res://Assets/Textures/Earth/RammedEarth006_NRM_2K_METALNESS.png" id="2_2aisd"]
@@ -8,6 +8,7 @@
 [ext_resource type="Texture2D" uid="uid://cp35jkjx8nyuf" path="res://Assets/Textures/BricksReclaimedWhitewashedOffset001_NRM_2K_METALNESS.png" id="6_h23iu"]
 [ext_resource type="PackedScene" uid="uid://58l8d5hgpbx1" path="res://Scenes/player.tscn" id="7_f02xt"]
 [ext_resource type="Texture2D" uid="uid://bh6uwy4i72kss" path="res://Assets/HDRIs/sunflowers_puresky_2k.hdr" id="8_f6rrk"]
+[ext_resource type="PackedScene" uid="uid://qkbx0jyr5v07" path="res://Scenes/Guns/pistol.tscn" id="9_1ctkn"]
 
 [sub_resource type="BoxShape3D" id="BoxShape3D_tge6p"]
 size = Vector3(100, 1, 100)
@@ -292,3 +293,10 @@ transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 1.91009, 0)
 environment = SubResource("Environment_iodk2")
 
 [node name="TempObjects" type="Node3D" parent="." groups=["temp_objects"]]
+
+[node name="Pistol" parent="TempObjects" instance=ExtResource("9_1ctkn")]
+transform = Transform3D(-4.37114e-08, -1, 0, 1, -4.37114e-08, 0, 0, 0, 1, 0.646497, 0.533619, -2.47313)
+head = "Gun"
+
+[node name="Pistol2" parent="TempObjects" instance=ExtResource("9_1ctkn")]
+transform = Transform3D(-3.03227e-08, -0.693704, -0.720261, 1, -4.37114e-08, 0, -3.14836e-08, -0.720261, 0.693704, 3.46932, 0.533619, 0.841009)
